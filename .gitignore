@@ -1,0 +1,12 @@
+/.idea
+/build
+/target
+/test-result
+CheckboxFailedTests/
+RadioButtonFailedTests/
+
+/*.ipr
+/*.iml
+/*.iws
+/*.log
+/*.mdmp
