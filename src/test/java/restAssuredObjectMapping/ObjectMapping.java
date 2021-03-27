@@ -23,6 +23,42 @@ public class ObjectMapping {
         RestAssured.baseURI = "https://reqres.in/api";
     }
 
+
+//  ==========Using ONE method to deserialize both SUCCESS and FAILURE==========
+//  Called by executeRegistrationAutomation method.
+    private void executeRegistration(Object email, Object password){
+        HashMap<String, Object> rqParameters = new HashMap<>();
+        rqParameters.put("email", email);
+        rqParameters.put("password", password);
+
+        Response rs = given()
+                .contentType(ContentType.JSON)
+                .body(rqParameters)
+                .post("/register");
+
+        if (rs.statusCode() == 200){
+            RegistrationSuccess rSuccess = rs.body().as(RegistrationSuccess.class);
+            Assert.assertEquals(rSuccess.getId(), 4);
+            Assert.assertEquals(rSuccess.getToken(), "QpwL5tke4Pnpja7X4");
+            System.out.println("[executeRegistration] Status code " + rs.statusCode());
+            System.out.println(rs.body().asPrettyString());
+        }
+        else if (rs.statusCode() == 400){
+            RegistrationUnsuccessful rFail = rs.body().as(RegistrationUnsuccessful.class);
+            Assert.assertEquals(rFail.getError(), "Missing password");
+            System.out.println("[executeRegistration] Status code " + rs.statusCode());
+            System.out.println(rs.body().asPrettyString());
+        }
+    }
+
+    @Test
+    public void executeRegistrationAutomation(){
+        executeRegistration("eve.holt@reqres.in", "pistol");
+        executeRegistration("sydney@fife", "");
+    }
+
+
+//  ==========Using TWO methods below to deserialize SUCCESS and FAILURE respectively==========
     @Test
     public void executeSuccessfulRegistration(){
         HashMap<String, Object> rqParameters = new HashMap<>();
@@ -33,7 +69,8 @@ public class ObjectMapping {
         RegistrationSuccess rSuccess = rs.body().as(RegistrationSuccess.class);
         Assert.assertEquals(rSuccess.getId(), 4);
         Assert.assertEquals(rSuccess.getToken(), "QpwL5tke4Pnpja7X4");
-        System.out.println("[executeSuccessfulRegistration] No errors were emitted.");
+        System.out.println("[executeRegistration] Status code " + rs.statusCode());
+        System.out.println(rs.body().asPrettyString());
     }
 
     @Test
@@ -45,22 +82,27 @@ public class ObjectMapping {
         RegistrationUnsuccessful rFail = rs.body().as(RegistrationUnsuccessful.class);
 
         Assert.assertEquals(rFail.getError(), "Missing password");
-        System.out.println("[executeUnsuccessfulRegistration] No errors were emitted.");
+        System.out.println("[executeRegistration] Status code " + rs.statusCode());
+        System.out.println(rs.body().asPrettyString());
     }
 
+//  Testing POST method, serializing a programming object into JSON format.
     @Test
     public void executeUsersTest(){
         HashMap<String, Object> rqParameters = new HashMap<>();
         rqParameters.put("name", "morpheus");
         rqParameters.put("job", "leader");
-        given()
+        Response rs = given()
                 .contentType(ContentType.JSON)
                 .body(rqParameters, ObjectMapperType.JACKSON_2)
-                .post("/users")
-                .then().assertThat().body("id", not(empty()))
+                .post("/users");
+
+        rs.then().assertThat().body("id", not(empty()))
                 .and()
                 .body("createdAt", not(empty()));
-        System.out.println("[executeUsersTest] No errors were emitted.");
+
+        System.out.println("[executeUsersTest] Status code: " + rs.statusCode());
+        System.out.println(rs.body().asPrettyString());
     }
 
     private Response basicPOST(HashMap<String, Object> hMap){
