@@ -25,7 +25,7 @@ public class Steps {
 
     @Test
     public void executeGetCertainNode() throws IOException {
-        String node = APIUtils.getNodeByDescription("GEL");
+        String node = APIUtils.getNodeRateByDescription("GEL");
         System.out.println("[ExecuteGetCertainNode] " + node);
     }
 

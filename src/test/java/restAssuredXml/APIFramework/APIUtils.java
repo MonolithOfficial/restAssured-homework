@@ -12,23 +12,23 @@ public class APIUtils {
     final static String xmlRoot = "Envelope.Body.GetCurrencyRatesResponse.GetCurrencyRatesResult.diffgram.NewDataSet";
 
     public static List<NodeImpl> getNodesBetween(int lowerBound, int upperBound) throws IOException {
-        Response res = Endpoints.getResponseWithDate();
+        Response res = Endpoints.GetCurrencyRates();
         XmlPath xmlPath = new XmlPath(res.asString());
 
         return xmlPath.getList(xmlRoot +
                 String.format(".Table.Rate.findAll {it.text().toFloat() >= %d && it.text().toFloat() <= %d}", lowerBound, upperBound));
     }
 
-    public static String getNodeByDescription(String desc) throws IOException {
-        Response res = Endpoints.getResponseWithDate();
+    public static String getNodeRateByDescription(String desc) throws IOException {
+        Response res = Endpoints.GetCurrencyRates();
         XmlPath xmlPath = new XmlPath(res.asString());
 
         return xmlPath.getString(xmlRoot +
-                String.format(".Table.Description.find {it.text() == '%s'}", desc));
+                String.format(".Table.find {it.Description.text() == '%s'}.Rate", desc));
     }
 
     public static List<String> getNodeDescriptionsByRatesBetween(int lowerBound, int upperBound) throws IOException {
-        Response res = Endpoints.getResponseWithDate();
+        Response res = Endpoints.GetCurrencyRates();
         XmlPath xmlPath = new XmlPath(res.asString());
 
         return  xmlPath.getList(xmlRoot +
