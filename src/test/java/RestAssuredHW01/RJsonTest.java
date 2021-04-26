@@ -1,3 +1,5 @@
+package RestAssuredHW01;
+
 import io.restassured.response.Response;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -36,6 +38,7 @@ public class RJsonTest {
 
     @Test(dataProvider = "circuitProvider")
     public void executeRJsonTest(String circuitId, String countryId){
+        System.out.println(circuitId);
         given()
                 .pathParam("circuitId", circuitId)
                 .when()
